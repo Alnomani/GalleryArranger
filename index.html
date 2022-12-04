@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <title>Grid Arranger</title>
+    <link rel="stylesheet" href="gallerystyle.css">
+    
+  </head>
+  <body>
+    <div class="left-panel">
+        <label for="nCol"><b># Columns:</b></label><br>
+        <input type="number" class="inp1" id="nCol" value="4" min="1" max="6"><br>
+        <label for="nRow"><b># Rows:</b></label><br>
+        <input type="number" class="inp1" id="nRow" value="4" min="1" max="300"><br>
+        <label for="zStrength" id="zStrLabel"><b>% Zoom:</b></label><br>
+        <input type="number" class="inp1" id="zStrength" value="20" min="1" max="200"><br>
+        <div class="slidecontainer">
+          <label for="myRange"><b>Grid Visibility:</b></label><br>
+          <input type="range" min="10" max="95" value="95" autocomplete="off" class="slider" id="myRange">
+        </div>
+        <a id="htmlgenerator" class="button1">Generate HTML!</a>
+        <a id="autofill" class="button1">Fill From Palette</a>
+        <a id="clearall" class="button1">Clear All</a>
+        <a id="addToPalette" class="button1">Add to Palette</a>
+        <input type="file" onchange="addFiles()" name="client-file" id="get-files" class="inp" accept="image/*" multiple /><br>
+        <label for="reserves" id="reslabel"><b>Image Palette:</b></label><br>
+        <div class="reserves" id="reserves"></div>
+        <a id="clearpalette" class="button1">Clear Palette</a>
+    </div>
+    <div class="centergrid">
+      <div class="grid-gen" id="grid-gen">
+          <div class="grid-container" id="grid-container">
+          </div>
+          <div class="codeblock" id="codeblock">
+            <img src="Icons/icons8-close-48.png" class="codeblockexit" onclick="closeCodeBlock()">
+            <label for="Text1" class="whitetext" ><b>CSS</b></label><br>
+            <textarea name="Text1" id="csstext" cols="45" rows="13" ></textarea>
+            <a type="button" id="copycss" class="button2" onclick="clipCSS()">Copy to Clipboard</a>
+            <label for="Text2" class="whitetext"><b>HTML</b></label><br>
+            <textarea name="Text2" id="htmltext"cols="90" rows="13" ></textarea>
+            <a type="button" class="button2" id="copyhtml" onclick="clipHTML()">Copy to Clipboard</a>
+            <label for="Text3" class="whitetext"><b>New SRC path:</b></label>
+            <input type="text" name="Text3" id="pathreplace" />
+            <a type="button" class="button2" id="replacebutton"">Replace src paths/URL</a>
+            <a type="button" class="button2" id="replacebutton2"">Use DataStrings</a>
+            <a type="button" class="button2" id="replacebutton3"">Use URL/Path + filename</a>
+          </div>
+      </div>
+    </div>
+  <script src="./AppLogic.js"></script>
+  </body>
+</html>
