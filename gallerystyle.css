@@ -1,0 +1,280 @@
+:root{
+--row-height: 250px;
+background-color: #3C3C61;
+}
+body {
+  height: 97vw;
+}
+
+#zStrength {
+  margin-top: 3px;
+  margin-bottom: 5px;
+}
+#nCol {
+  margin: 3px;
+}
+#reslabel{
+  margin-bottom: 50px;
+}
+.codeblock{
+  display: none;
+  white-space: pre;
+  user-select: text;
+  position: fixed;
+  height: 130%;
+  width: 85%;
+  z-index: 7;
+  background-color: #3C3C61;
+  top: 0px;
+  left: 15%;
+  text-align:center;
+}
+.centergrid {
+  display: flex;
+  margin-left: 17%;
+  text-align: center;
+}
+.grid-gen {
+    margin: auto;
+    width: 95%;
+    -moz-user-select: none;
+    user-select: none;
+    text-align: center;
+}
+.left-panel {
+    position: fixed;
+    display: inline-block;
+    width: 15%;
+    height: 97vh;
+    background-color: #E6E6FA;
+    text-align:center;
+    padding: 5px;
+    overflow: hidden;
+}
+/* grid tempate rows: 250px; would just affect one row*/
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background-color: #CECEE0;
+  padding: 8px;
+}
+/*transparent border so that when you do add a border the content doesn't shift*/
+/*border brakes percentages need to account for it separately(2x X amount of px)*/
+.image-frame {
+    position: relative;
+    overflow: hidden;
+    backface-visibility: hidden;
+}
+.content {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    position: absolute;
+    height: calc(100% - 3px);
+    width: calc(100% - 3px);
+    padding: 3px;
+    overflow: hidden;
+    backface-visibility: hidden;
+}
+.filler {
+    position: relative;
+    cursor: copy;
+}
+.filler img:hover{
+  opacity: 0.5;
+}
+.grid-img {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  cursor: move;
+}
+.magnify-img, .shrink, .exit, .lock {
+    position: relative;
+    border-style: none;
+    width: 20%;
+    max-height: 33px;
+    max-width: 30px;
+    padding: 0;
+    object-fit: cover;
+}
+.magnify-img:hover, .lock:hover, .shrink:hover {
+    background-color: grey;
+}
+.expanddown:hover, .expandright:hover, .exit:hover {
+    background-color: grey;
+}
+.hide {
+  display: none;
+  position: absolute;
+  background-color: #d3d3d3;
+  opacity: 65%;
+  z-index: 5;
+  height: 1%;
+  max-height: 20%;
+  overflow: hidden;
+}
+.content:hover > .hide {
+  display: inline-block;
+}
+.slidecontainer {
+  width: 75%; /* Width of the outside container */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 8px;
+  margin-top: 5px;
+}
+/* The slider itself */
+.slider {
+  width: 100%; /* Full-width */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+input[type='range'] {
+  -webkit-appearance: none;
+  background-color: white;
+  height: 15px;
+  overflow: hidden;
+  width: 95%;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  height: 20px;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: black;
+  border-radius: 30%;
+  box-shadow: -210px 0 0 200px #3C3C61 ;
+  cursor: pointer;
+  height: 20px;
+  width: 15px;
+  border: 0;
+}
+label{
+  font-size: clamp(10px, 2vw, 17px);
+}
+.inp1{
+  width: 8vw;
+  max-width: 60px;
+}
+.reserves {
+   background-color: white;
+   min-height: 80px;
+   max-height: 35%;
+   width: 80%;
+   margin: auto;
+   margin-bottom: 5px;
+   border: 2px solid black;
+   overflow-x: hidden;
+   overflow-y: auto;
+}
+.reserves::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.reserves::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+.reserves::-webkit-scrollbar-thumb {
+  background: #3C3C61; 
+}
+
+/* Handle on hover */
+.reserves::-webkit-scrollbar-thumb:hover {
+  background: #3c3c61cd; 
+}
+
+.inp {
+  display: none;
+  width: 70%;
+}
+.reserve-item {
+    white-space: nowrap;
+    height: 30px;
+    user-select: none;
+} 
+.reserve-item:hover {
+    background-color: #3c3c6188;
+} 
+.codeblockexit{
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 30px;
+  height: auto;
+}
+a.button1{
+    display: inline-block;
+    padding: 0.35em 1.2em;
+    border: 0.1em solid #FFFFFF;
+    margin: 0 0.3em 0.30em 0;
+    border-radius: 0.12em;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: 'Roboto',sans-serif;
+    font-weight: 300;
+    font-size: 1.1vw;
+    width: 70%;
+    color: #E6E6FA;
+    text-align: center;
+    transition: all 0.2s;
+    background-color: #3C3C61;
+  }
+  a.button1:hover{
+    color:#000000;
+    background-color:#FFFFFF;
+  }
+  @media all and (max-width:30em){
+   a.button1{
+    display:block;
+    margin:0.4em auto;
+  }
+}
+a.button2{
+  display: inline-block;
+  padding: 0.35em 1.2em;
+  border: 0.1em solid #FFFFFF;
+  margin: 0 0.3em 0.30em 0;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: 'Roboto',sans-serif;
+  font-weight: 300;
+  font-size: 1.05vw;
+  width: 18%;
+  color: black;
+  text-align: center;
+  transition: all 0.2s;
+  background-color: #E6E6FA;
+}
+a.button2:hover{
+  color:#000000;
+  background-color:#FFFFFF;
+}
+@media all and (max-width:30em){
+ a.button2{
+  display:block;
+  margin:0.4em auto;
+}
+}
+
+.whitetext {
+  color: white;
+}
+#pathreplace{
+  resize: none;
+  width: 30%;
+  margin-bottom: 2px;
+}
