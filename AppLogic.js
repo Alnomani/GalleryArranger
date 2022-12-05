@@ -1,61 +1,71 @@
+/*
+BUG1: going from 6 to less columns leaves tiny filler areas on the sides.
+BUG2: filling from palette when there is still one image left and the palette is full
+BUG3: after bug2 removing everything and refilling again doesn't fill every space.
+
+*/
+
+// Set default values
+var zStrengthValue = 20;
+var nCols = 4;
+var nRows = 4;
 var dataString = false;
 var isDown = false;
 var movingElement = "";
-var columnInput = document.getElementById("nCol");
-var rowInput = document.getElementById("nRow");
-var nCols = 4;
-var nRows = 4;
-var zStrength = document.getElementById("zStrength");
-var zStrengthValue = 20;
-var images =   [["vert1.jpg","1 / 1 / 3 / 2;","1/2"],
-                ["lookbook10.jpg","3 / 3 / 4 / 5;", "2/1"],
-                ["hor3.jpg","1 / 2 / 2 / 3;", "1/1"],
-                ["hor2.jpg","2 / 2 / 4 / 3;", "1/2" ],
-                ["lookbook6.jpg","3 / 1 / 4 / 2;","1/1"],
-                ["hor11.jpg","1 / 3 / 3 / 5;","2/2"]
-               ];
-        
-var nImages = images.length;
+
+// addImgFromFile() uses nImages
+var nImages = 6;
+
+/* for each initial number of rows and columns create a div called a filler, those are considered 
+   to be potential places for images to be placed or expanded to. */
 for(let j = 1; j < (nRows+1); j++){
     for(let i = 1; i < (nCols+1); i++){
         createFiller(j + "/" + i + "/" + (j+1) + "/" + (i+1));
     }
 }
-var but = document.getElementById("htmlgenerator");
-but.addEventListener("click",generateHTML)
-var but2 = document.getElementById("autofill");
-but2.addEventListener("click",fillGrid)
-var but3 = document.getElementById("clearall");
-but3.addEventListener("click",removeAllImgs)
-var clearPaletteButton = document.getElementById("clearpalette");
-clearPaletteButton.addEventListener("click",clearPalette)
-var addImgsButton = document.getElementById("addToPalette");
-addImgsButton.addEventListener("click",function(e){
-    let inp = document.getElementById("get-files")
-    inp.click()
-})
-var replacetextbut = document.getElementById("replacebutton");
-replacetextbut.addEventListener("click",generateHTML)
-var replacetextbut2 = document.getElementById("replacebutton2");
-replacetextbut2.addEventListener("click",() => {
-                                dataString = true;
-                                generateHTML();
-                                dataString = false;
-                            })
-var replacetextbut3 = document.getElementById("replacebutton3");
-replacetextbut3.addEventListener("click",() => {
-                                dataString = false;
-                                generateHTML();
-                            })
 
-
+// get references to input elements
+var columnInput = document.getElementById("nCol");
+var rowInput = document.getElementById("nRow");
+var zStrength = document.getElementById("zStrength");
 var slider = document.getElementById("myRange");
+
 // Update the current slider value (each time you drag the slider handle)
 slider.oninput = function() {
   let grid = document.getElementById('grid-gen');
-  //console.log(this.value)
   grid.style.width = this.value + "%";
 } 
+
+// Attach click listener functions to the 5 buttons contained within the left panel
+document.getElementById("htmlgenerator")
+        .addEventListener("click", generateHTML)
+document.getElementById("autofill")
+        .addEventListener("click", fillGrid)
+document.getElementById("clearall")
+        .addEventListener("click", removeAllImgs)
+document.getElementById("clearpalette")
+        .addEventListener("click", clearPalette)
+document.getElementById("addToPalette")
+        .addEventListener("click",
+                           function(e){
+                               document.getElementById("get-files").click()
+                            })
+
+// Listeners for the buttons in the codeblock section for html generation
+document.getElementById("replacebutton")
+        .addEventListener("click",generateHTML)
+document.getElementById("replacebutton2")
+        .addEventListener("click",() => {
+                                    dataString = true;
+                                    generateHTML();
+                                    dataString = false;
+                                })
+document.getElementById("replacebutton3")
+        .addEventListener("click",() => {
+                                dataString = false;
+                                generateHTML();
+                            })
+
 function clipCSS(){
     const cssarea = document.getElementById("csstext");
     cssarea.select();
@@ -68,23 +78,30 @@ function clipHTML(){
     htmlarea.setSelectionRange(0, 99999); /* For mobile devices */
     navigator.clipboard.writeText(htmlarea.value);
 }
+
+// Hides the html generation window
 function closeCodeBlock(e){
     const codeblock = document.getElementById("codeblock");
     codeblock.style.display = "none";
 }
+
+// Converts current gridlayout to html and css.
 function generateHTML(){
-    var images = document.getElementsByClassName("grid-img");
+    var images = document.getElementsByClassName("grid-img"); // Get all elements that contain images.
+    // Set some initial html
     const gridContainer = '        <div class="grid-gen" id="grid-gen">\n            <div class="grid-container" id="grid-container">\n';
     var outputString = gridContainer;
     const divClosingTag = '</div>';
-    const headerHTML = `<!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>Result Grid</title>
-        <link rel="stylesheet" href="gallerystyle.css">
-      </head>
-    <body>\n`;
+    const headerHTML = 
+            `<!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="UTF-8">
+                <title>Result Grid</title>
+                <link rel="stylesheet" href="gallerystyle.css">
+              </head>
+            <body>\n`;
+            
     for(let i = 0; i < images.length; i++){
         let frame = images[i].parentElement.parentElement;
         let top = images[i].style.top;
@@ -92,16 +109,9 @@ function generateHTML(){
         if(images[i].style.top == "" && images[i].style.left == ""){
             let imgRect = images[i].getBoundingClientRect();
             let contRect = images[i].parentElement.getBoundingClientRect();
-            //console.log(parseInt(window.getComputedStyle(images[i]).getPropertyValue("left"),10))
-            //console.log(imgRect)
-            //top = (imgRect.top / contRect.height * 100)+ "%";
-            //left = (imgRect.left / contRect.width * 100)+ "%";
             top = 0 + "%";
             left = 0 + "%";
-
-            //console.log(`Top: ${top} Left: ${left}`)
         }
-        //let path = images[i].src;
         let path = images[i].alt;
         let newPath = document.querySelector("#pathreplace").value
         if(newPath != "" && newPath){
@@ -131,46 +141,51 @@ function generateHTML(){
     const cssarea = document.getElementById("csstext");
     htmldiv.style.display = "inline-block";
     htmlarea.value = outputString;
-    var cssString = `.grid-gen {
-        margin: auto;
-        width: 100%;
-        float: left;
-        -moz-user-select: none;
-        user-select: none;
-    }\n
-    .grid-container {
-        display: grid;
-        grid-template-columns: repeat(${nCols}, 1fr);
-        background-color: #E6E6FA;
-        padding: 8px;
-    }\n
-    .image-frame {
-        position: relative;
-        overflow: hidden;
-        backface-visibility: hidden;
-    }\n
-    .content {
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        position: absolute;
-        height: calc(100% - 3px);
-        width: calc(100% - 3px);
-        padding: 3px;
-        overflow: hidden;
-        backface-visibility: hidden;
-    }\n
-    .grid-img {
-        position: absolute;
-        left: 0px;
-        top: 0px;
-    }`;     
+    var cssString = 
+        `.grid-gen {
+            margin: auto;
+            width: 100%;
+            float: left;
+            -moz-user-select: none;
+            user-select: none;
+        }\n
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(${nCols}, 1fr);
+            background-color: #E6E6FA;
+            padding: 8px;
+        }\n
+        .image-frame {
+            position: relative;
+            overflow: hidden;
+            backface-visibility: hidden;
+        }\n
+        .content {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            position: absolute;
+            height: calc(100% - 3px);
+            width: calc(100% - 3px);
+            padding: 3px;
+            overflow: hidden;
+            backface-visibility: hidden;
+        }\n
+        .grid-img {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+        }`;     
     cssarea.value = cssString;
 
 }
+
+// returns an integer number between min and max
 function randomIntFromInterval(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
+
+// calculate factorial of num
 function sFact(num)
 {
     var rval=1;
@@ -179,9 +194,12 @@ function sFact(num)
     return rval;
 }
 
-function argMax(array) {
+function argMax(array){
     return [].reduce.call(array, (m, c, i, arr) => c > arr[m] ? i : m, 0)
-  }
+}
+
+
+// Currently unused?
 function makeGrid2(){
     let rItems = document.querySelectorAll(".reserve-item");
     let nItems = rItems.length;
@@ -244,19 +262,20 @@ function makeGrid2(){
     rItems.forEach(rItem =>{ rItem.remove()});
 
 }
+
+// Remove all items from Image Palette
 function clearPalette(){
     let reserveItems = document.querySelectorAll(".reserve-item")
-    
     reserveItems.forEach(item => {
         item.remove()
     })
+    // reset hidden get-files element
     let inp = document.getElementById("get-files");
     inp.value = '';
 }
 
+// Currently unused?
 function randomFill(){
-    //let numSpaces = document.getElementsByClassName('filler').length
-    //let numItems = document.getElementsByClassName('reserve-item').length
     let numSpaces = 16;
     let numItems = 7;
     //let numPerms = sFact(numItems)/(sFact((numItems - 3)))
@@ -285,23 +304,38 @@ function randomFill(){
     }
     console.log("solution not found!")
 }
+
 rowInput.addEventListener('change', (event) => {
     console.log("Row change triggers: ", nRows ,"->", rowInput.value)
-    let newNRows = parseInt(rowInput.value, 10)
+    // nRows is the current number of rows vs the now new value from rowInput.value
+    let newNRows = parseInt(rowInput.value, 10) // str to int conversion
+    
     if(newNRows > nRows){
         console.log("More rows requested")
+        // Add new filler spaces when a row expansion is requested
+        // Does does not affect the current images in the grid
         for(let j = 1; j < (newNRows - nRows + 1); j++){
             for(let i = 1;  i < (nCols+1); i++){
                 createFiller(`${nRows+j}/${i}/${nRows+j+1}/${i+1}`);
             }
         }
+        // Set new value as current value
         nRows = newNRows;
         console.log(document.querySelectorAll(".filler"))
     }else{
+        // when less rows are requested
+        // First handle the images in the to be removed rows                             
         let gridImgs = document.querySelectorAll(".image-frame");
         gridImgs.forEach(img => {
             for(let i = 0; i < (nRows - newNRows); i++)
+                // Check if an image falls within the rows to be removed
+                // by looking at where their position ends in the grid
                 if(img.style["grid-row-end"] == `${nRows-i+1}`){
+                    /* If the image starts within the to be removed rows then
+                       put the image back into the image palette since cannot 
+                       be shrunken so that it fits on the remaining rows of the grid, otherwise shrink
+                       for each removed row
+                    */
                     if(img.style["grid-row-start"] == `${nRows-i}`){
                         console.log("Removing image...")
                         removeImg(img);
@@ -312,7 +346,7 @@ rowInput.addEventListener('change', (event) => {
                 }
             }
         );
-
+        // Handle the filler spaces in the to be removed rows by removing them
         let fillers = document.querySelectorAll(".filler");
         fillers.forEach(filler => {
             for(let i = 0; i < (nRows - newNRows); i++){
@@ -332,10 +366,11 @@ columnInput.addEventListener('change', (event) => {
     console.log("number of columns:", columnInput.value)
     var colInput = parseInt(columnInput.value,10)
     if(colInput > 6){
-        console.log("More than 6 columns not permitted! You are now benchod!")
+        console.log("More than 6 columns not permitted!")
         return
     }
     if(colInput > nCols){
+        // Adds fillers to columns that are created when higher number of columns requested
         let gridCont = document.getElementById("grid-container");
         gridCont.style["grid-template-columns"] = `repeat(${colInput}, 1fr)`
         for(let j = 1; j < (colInput - nCols + 1); j++){
@@ -345,12 +380,17 @@ columnInput.addEventListener('change', (event) => {
         }
         nCols = colInput;
     }else{
-
         let gridImgs = document.querySelectorAll(".image-frame");
         console.log(parseInt(colInput)+2)
-
         gridImgs.forEach(img => {
+            // Check if an image falls within the columns to be removed
+            // by looking at where their position ends in the grid
             if(img.style["grid-column-end"] == `${colInput+2}`){
+            /* If the image starts within the to be removed columns then
+               put the image back into the image palette since cannot 
+               be shrunken so that it fits on the remaining colums of the grid, otherwise shrink
+               for each removed column
+             */
                 if(img.style["grid-column-start"] == `${colInput+1}`){
                     console.log("Removing image...")
                     removeImg(img);
@@ -361,6 +401,7 @@ columnInput.addEventListener('change', (event) => {
 
             }
         });
+        // Remove fillers in to be deleted columns
         let fillers = document.querySelectorAll(".filler");
         fillers.forEach(filler => {
             if(filler.style["grid-column-end"] == `${colInput+2}`){
@@ -368,6 +409,7 @@ columnInput.addEventListener('change', (event) => {
                 filler.remove();
             }
         });
+        // Adjuct grid layout
         let gridCont = document.getElementById("grid-container");
         gridCont.style["grid-template-columns"] = `repeat(${colInput}, 1fr)`
         nCols = colInput
@@ -380,8 +422,13 @@ zStrength.addEventListener('change',(event) => {
 
 })
 
+// Function Triggers when pressing the Add from Palette button
 function fillGrid(){
+    // Creates a shallow copy of the array in the first argument, according to
+    // the functions in the second argument. startArray is a 2d array with zeros
+    // filled according to current gridsize
     let startArray = Array.from(Array(nRows), _ => Array(nCols).fill(0));
+
     let images = document.querySelectorAll(".reserve-item");
     if(images.length == 0){return} // return if nothing in palette
     let fillers = document.querySelectorAll(".filler");
@@ -395,6 +442,8 @@ function fillGrid(){
                 parseInt(img.style["grid-row-end"],10),
                 parseInt(img.style["grid-column-end"],10)
                 ];
+                // input image index in the 2d array for each image to indicate
+                // its position in the grid. As when its expanded it takes more than 1 value.
                 for(let r = 0; r < (s[2] - s[0]); r++){
                     for(let c = 0; c < (s[3] - s[1]); c++){
                         startArray[s[0]-1+r][s[1]-1+c] = i+1
@@ -403,7 +452,7 @@ function fillGrid(){
 
                 
     })
-    console.table(startArray)
+    //console.table(startArray)
     let cX = 0;
     let cY = 0;
     let options = [1]
@@ -412,7 +461,8 @@ function fillGrid(){
     let count = 0;
     let maxCount = 5;
     let areas = [];
-    //assigns deep copy of the array to gridArray
+    
+    //assigns deep copy of the array to the gridArray variable
     let gridArray = JSON.parse(JSON.stringify(startArray));
     // 0 indicates position of filler/empty frames.
     console.log(exists(gridArray, 0))
@@ -421,9 +471,15 @@ function fillGrid(){
     // you could precheck if its even possible to get all the space filled. (nCols*nRows) > (images.length*4)
     // where 4 is the max number of spaces an image can possibly take in this case.
     // What if there are already images in the grid so you should subtract the number non zeros from nCols*nRows
+    
+    // if there are enough spaces for all the images set maxCount to 1
+    // maxCount is the number of tries to fill the array completely(no zeros)
     if((nCols*nRows) > (images.length*4)){maxCount = 1}
     let lastImageIndex = images.length;
+    
+    // While there are still zero's and maxcount is not reached
     while(exists(gridArray, 0) && count < maxCount){
+        // reset current state of gridarray to state at the start
         gridArray = JSON.parse(JSON.stringify(startArray))
         areas = []
         images.forEach((_, i) => {
@@ -431,18 +487,21 @@ function fillGrid(){
             options = [1]
             optionIndex = 0;
             currentOption = 0;
+            // cX and cY is the position of the next empty space(has a 0 value)
             cX = 0;
             cY = 0;
-            // Finds coords of an empty spot to put new image
+            // Finds coords of the next empty spot to put a new image in
             inner:
                 for(let row = 0; row < gridArray.length; row++){
                     for(let col = 0; col < gridArray[0].length; col++){
+                        // if 0 position found break inner loop
                         if(gridArray[row][col] == 0){
                             console.log(row, col)
                             cX = row;
                             cY = col;
                             break inner;
                         }
+                        // no zeros case
                         if(row == (gridArray.length-1) && col == (gridArray[0].length-1)){
                             console.log("No more space for images.")
                             // returns from images.forEach once
@@ -456,6 +515,10 @@ function fillGrid(){
                 }
 
             console.log(`Starting at ${cX},${cY}`)
+            // Check if expanding image frame to the right is possible(empty space)
+            // First check if that space is not outside the grid then check 
+            // if doesn't contain any images. If its an option the add it
+            // to the options array (2 x spaces 1 y space yields 21)
             if((cX+1) < gridArray.length){
                 if(gridArray[cX+1][cY] == 0){
                     options.push(21)
@@ -471,13 +534,15 @@ function fillGrid(){
                     options.push(4)
                 } // diag
             }
-
+            // Select random expansion option from the options array
             optionIndex = Math.floor(Math.random() * options.length);
             currentOption = options[optionIndex]
+            
             console.log(options)
             console.log("current option:", currentOption)
             switch(currentOption){
                 case 1:
+                    // update gridArray
                     gridArray[cX][cY] = i+1;
                     areas.push([`${cX+1} / ${cY+1} / ${cX+2} / ${cY+2}`, "1 / 1"])
                     break;
@@ -502,13 +567,14 @@ function fillGrid(){
                     console.log("something went wrong")
 
             }
-        // console.table(gridArray)
-        })
+        }) // END image.foreach
         count++;
     }
+    
     console.table(gridArray)
     let fillerCoords = [];
     //get coords of 0's that are left
+    // You might get this if you have very few images in comparison to rows*columns
     for(let row = 0; row < gridArray.length; row++){
         for(let col = 0; col < gridArray[0].length; col++){
             if(gridArray[row][col] == 0){
@@ -516,6 +582,8 @@ function fillGrid(){
             }
         }
     }
+    // Parse to get a list of ids for images already in the grid
+    // to prevent duplicate id numbers
     var imgIdList = []; 
     [...document.getElementsByClassName("grid-img")].forEach(img => {
         imgIdList.push(parseInt(img.id.split(/(\d+)/)[1],10));
@@ -529,11 +597,13 @@ function fillGrid(){
             filler.remove()
         }
     })
+    // Place an image in each area
     areas.forEach((area, i) => {
         console.log("For area:" , area)
+        // while loop for getting unique id number
+        // keep incrementing until its not in the current img list
         while(imgIdList.includes(newIdNum)){
             newIdNum = newIdNum + 1
-            console.log("in loop")
         }
         createGridItem(images[i].firstChild.src, images[i].firstChild.alt, area[0], area[1], newIdNum)
         imgIdList.push(newIdNum)
@@ -547,13 +617,16 @@ function fillGrid(){
     
 
 }
+
+// Checks if "search" argument exists in 2d array
 function exists(arr, search) {
     return arr.some(row => row.includes(search));
 }
+
+// Gets browsed files and puts them in the image palette
 function addFiles(){
     var files = Array.from(document.getElementById("get-files").files);
     var reserves = document.getElementById("reserves");
-    console.log(files);
     files.forEach((file, i) => {
         console.log(file.name)
         var reader = new FileReader();
@@ -563,9 +636,9 @@ function addFiles(){
         reader.readAsDataURL(file);
     })
     reserves.style.border = "2px solid black";
-
 }
 
+// create a container element to hold an image in the image palette
 function createReserveItem(name, fileName, reserves, id){
     var item = document.createElement("div");
     item.setAttribute("class","reserve-item");
@@ -589,6 +662,7 @@ function createReserveItem(name, fileName, reserves, id){
     item.addEventListener("dragstart",reserveItemDrag);
     reserves.appendChild(item);
 }
+
 function createGridItem(image_name, fileName, location, ar, i){
     var image_grid = document.createElement('div');
     image_grid.setAttribute("class","image-frame");
